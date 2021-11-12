@@ -37,7 +37,7 @@ public class UserController {
                 .body(userService.findUsersResultsByLevelId(levelId));
     }
 
-    @PutMapping("/setinfo}")
+    @PutMapping("/setinfo")
     public ResponseEntity<?> addUserInfo(@RequestBody UserFullInfoDto userFullInfoDto) {
 
         if (!userValidator.isUserFullInfoDtoValidate(userFullInfoDto)) {
