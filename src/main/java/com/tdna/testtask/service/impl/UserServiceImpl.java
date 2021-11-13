@@ -1,8 +1,10 @@
 package com.tdna.testtask.service.impl;
 
+import com.tdna.testtask.domain.LevelResultParameter;
+import com.tdna.testtask.domain.UserResultParameter;
 import com.tdna.testtask.dto.UserFullInfoDto;
-import com.tdna.testtask.entity.UserFullInfo;
-import com.tdna.testtask.repository.UserRepository;
+import com.tdna.testtask.repository.LevelResultsRepository;
+import com.tdna.testtask.repository.UserResultsRepository;
 import com.tdna.testtask.service.UserConverter;
 import com.tdna.testtask.service.UserService;
 import org.slf4j.Logger;
@@ -17,13 +19,17 @@ public class UserServiceImpl implements UserService {
 
     private final Logger logger = getLogger(UserServiceImpl.class);
 
-    private final UserRepository userRepository;
+    private final UserResultsRepository userResultsRepository;
+
+    private final LevelResultsRepository levelResultsRepository;
 
     private final UserConverter userConverter;
 
-    public UserServiceImpl(UserRepository userRepository,
+    public UserServiceImpl(UserResultsRepository userResultsRepository,
+                           LevelResultsRepository levelResultsRepository,
                            UserConverter userConverter) {
-        this.userRepository = userRepository;
+        this.userResultsRepository = userResultsRepository;
+        this.levelResultsRepository = levelResultsRepository;
         this.userConverter = userConverter;
     }
 
@@ -31,9 +37,9 @@ public class UserServiceImpl implements UserService {
     public List<UserFullInfoDto> findUserResultsByUserId(Long userId) {
         logger.info("Find user results by user id: " + userId);
 
-        List<UserFullInfo> userResultsByUserId = userRepository.findUserResultsByUserId(userId);
+        List<UserResultParameter> topUserResults = userResultsRepository.findTopUserResults(userId);
 
-        List<UserFullInfoDto> userResultsByUserIdDto = userConverter.convertToUserFullInfoDtoList(userResultsByUserId);
+        List<UserFullInfoDto> userResultsByUserIdDto = userConverter.convertTopUserResultsToDtoList(topUserResults);
 
         logger.info("Successfully user results by user id: " + userId);
 
@@ -44,9 +50,9 @@ public class UserServiceImpl implements UserService {
     public List<UserFullInfoDto> findUsersResultsByLevelId(Long levelId) {
         logger.info("Find users results by level id: " + levelId);
 
-        List<UserFullInfo> userResultsByLevelId = userRepository.findUsersResultsByLevelId(levelId);
+        List<LevelResultParameter> topLevelResults = levelResultsRepository.findTopLevelResults(levelId);
 
-        List<UserFullInfoDto> userResultsByLevelIdDto = userConverter.convertToUserFullInfoDtoList(userResultsByLevelId);
+        List<UserFullInfoDto> userResultsByLevelIdDto = userConverter.convertTopLevelResultsToDtoList(topLevelResults);
 
         logger.info("Successfully users results by level id: " + levelId);
 
@@ -54,13 +60,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserFullInfoDto addUserResult(UserFullInfoDto userFullInfoDto) {
+    public void addUserResult(UserFullInfoDto userFullInfoDto) {
         logger.info("Add user result: " + userFullInfoDto);
 
-        UserFullInfo userResult = userRepository.save(userConverter.convertToUserFullInfo(userFullInfoDto));
+        userResultsRepository.addResult(userFullInfoDto);
 
-        logger.info("Successfully add user result: " + userResult);
+        levelResultsRepository.addResult(userFullInfoDto);
 
-        return userConverter.convertToUserFullInfoDto(userResult);
+        logger.info("Successfully add user result: " + userFullInfoDto);
+    }
+
+    @Override
+    public void addUserResults(List<UserFullInfoDto> userFullInfoDtoList) {
+        userFullInfoDtoList.forEach(this::addUserResult);
     }
 }

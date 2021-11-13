@@ -10,6 +10,8 @@ public interface UserService {
 
     List<UserFullInfoDto> findUsersResultsByLevelId(Long levelId);
 
-    UserFullInfoDto addUserResult(UserFullInfoDto userFullInfoDto);
+    void addUserResult(UserFullInfoDto userFullInfoDto);
+
+    void addUserResults(List<UserFullInfoDto> userFullInfoDtoList);
 
 }

@@ -1,7 +1,8 @@
 package com.tdna.testtask.service.impl;
 
+import com.tdna.testtask.domain.LevelResultParameter;
+import com.tdna.testtask.domain.UserResultParameter;
 import com.tdna.testtask.dto.UserFullInfoDto;
-import com.tdna.testtask.entity.UserFullInfo;
 import com.tdna.testtask.service.UserConverter;
 import org.springframework.stereotype.Service;
 
@@ -12,27 +13,17 @@ import java.util.stream.Collectors;
 public class UserConverterImpl implements UserConverter {
 
     @Override
-    public List<UserFullInfoDto> convertToUserFullInfoDtoList(List<UserFullInfo> userFullInfoList) {
-        return userFullInfoList.stream()
-                .map(this::convertToUserFullInfoDto)
+    public List<UserFullInfoDto> convertTopUserResultsToDtoList(List<UserResultParameter> topUserResults) {
+        return topUserResults.stream()
+                .map(userResultParameter -> new UserFullInfoDto(userResultParameter.getUserId(), userResultParameter.getLevelId(), userResultParameter.getResult()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserFullInfoDto convertToUserFullInfoDto(UserFullInfo userFullInfo) {
-        return new UserFullInfoDto(
-                userFullInfo.getUserId(),
-                userFullInfo.getLevelId(),
-                userFullInfo.getResult()
-        );
+    public List<UserFullInfoDto> convertTopLevelResultsToDtoList(List<LevelResultParameter> topLevelResults) {
+        return topLevelResults.stream()
+                .map(levelResultParameter -> new UserFullInfoDto(levelResultParameter.getUserId(), levelResultParameter.getLevelId(), levelResultParameter.getResult()))
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public UserFullInfo convertToUserFullInfo(UserFullInfoDto userFullInfoDto) {
-        return new UserFullInfo(
-                userFullInfoDto.getUserId(),
-                userFullInfoDto.getLevelId(),
-                userFullInfoDto.getResult()
-        );
-    }
 }

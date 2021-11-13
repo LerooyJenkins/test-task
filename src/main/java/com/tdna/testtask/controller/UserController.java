@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class UserController {
 
@@ -46,9 +48,21 @@ public class UserController {
                     .body("One parameter in dto is null - " + userFullInfoDto);
         }
 
+        userService.addUserResult(userFullInfoDto);
+
         return ResponseEntity
                 .status(200)
-                .body(userService.addUserResult(userFullInfoDto));
+                .build();
+    }
+
+    // add for tests
+    @PutMapping("/setinfo-arr")
+    public ResponseEntity<?> addUserInfoArr(@RequestBody List<UserFullInfoDto> userFullInfoDtoList) {
+        userService.addUserResults(userFullInfoDtoList);
+
+        return ResponseEntity
+                .status(200)
+                .build();
     }
 
 }
